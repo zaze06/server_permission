@@ -3,6 +3,7 @@ package me.zacharias.serverpermission.commands;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import me.zacharias.serverpermission.Command;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,23 @@ public class Send implements Command {
 
     @Override
     public void execute(Invocation invocation) {
-
+        if(invocation.arguments().length < 2){
+            invocation.source().sendMessage(MiniMessage.miniMessage().deserialize("<red>Usage: /send <player> <server>"));
+            return;
+        }
+        Player p = SERVER.getPlayer(invocation.arguments()[0]).orElse(null);
+        RegisteredServer server = SERVER.getServer(invocation.arguments()[1]).orElse(null);
+        if(p == null || server == null){
+            invocation.source().sendMessage(MiniMessage.miniMessage().deserialize("<red>Player or server doesn't exist"));
+            return;
+        }
+        if(serverLocked.getBoolean(server.getServerInfo().getName())){
+            if(invocation.source().hasPermission("serverPermission.server."+ server.getServerInfo().getName())){
+                p.createConnectionRequest(server).connectWithIndication();
+            }else{
+                invocation.source().sendMessage(MiniMessage.miniMessage().deserialize("<red>You don't have permission to connect to this server"));
+            }
+        }
     }
 
     @Override

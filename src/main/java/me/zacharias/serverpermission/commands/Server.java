@@ -28,7 +28,8 @@ public class Server implements Command {
     public void execute(Invocation invocation) {
         if(invocation.source() instanceof Player p) {
             if (invocation.arguments().length > 0) {
-                if (p.hasPermission("serverPermission.server." + invocation.arguments()[0])) {
+                boolean requirePermission = serverLocked.has(invocation.arguments()[0]) && serverLocked.getBoolean(invocation.arguments()[0]);
+                if (!requirePermission || p.hasPermission("serverPermission.server." + invocation.arguments()[0])) {
                     Optional<RegisteredServer> server = SERVER.getServer(invocation.arguments()[0]);
                     if(server.isEmpty()){
                         p.sendMessage(MiniMessage.miniMessage().deserialize("<red> Server "+invocation.arguments()[0]+" doesn't exist"));

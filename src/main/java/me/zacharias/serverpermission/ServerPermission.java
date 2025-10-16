@@ -79,6 +79,7 @@ public class ServerPermission {
         registerCommand(new Lock());
         registerCommand(new Unlock());
         registerCommand(new Cluster());
+        registerCommand(new ListServers());
     }
 
     @Subscribe
